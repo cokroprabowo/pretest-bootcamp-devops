@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+  # Backend Spring Boot App
+  backend:
+    image: dimmaryanto93/udemy-springboot-app:latest
+    container_name: backend
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=db_pretest
+      - DATABASE_PASSWORD=pretest123
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  # Frontend Angular App
+  frontend:
+    image: dimmaryanto93/udemy-angular-app:latest
+    container_name: frontend
+    ports:
+      - "80:80"
+    environment:
+      - APPLICATION_PORT=80
+      - NGINX_ROOT_DOCUMENT=/var/www/html
+      - BACKEND_HOST=backend
+      - BACKEND_PORT=8080
+      - BACKEND_CONTEXT_PATH=/
+    networks:
+      - app-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14
+    container_name: postgres14
+    environment:
+      - POSTGRES_USER=user_pretest
+      - POSTGRES_PASSWORD=pretest123
+      - POSTGRES_DB=db_pretest
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
